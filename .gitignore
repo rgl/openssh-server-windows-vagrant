@@ -1,0 +1,6 @@
+.vagrant/
+.vscode/
+tmp/
+bin/
+obj/
+*.exe
