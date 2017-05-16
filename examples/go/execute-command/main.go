@@ -8,11 +8,11 @@ import (
 	"log"
 	"os"
 	"os/user"
-	"net"
 	"path"
 	"strings"
 
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/knownhosts"
 )
 
 var (
@@ -20,8 +20,10 @@ var (
 	sshPassword = flag.String("password", "", "ssh password")
 	sshServer = flag.String("addr", "10.10.10.100:22", "ssh server address:port")
 	sshKeyFile = flag.String("keyFile", "", "ssh client private key")
+	sshKnownHostsFile = flag.String("knownHostsFile", "~/.ssh/known_hosts", "ssh known hosts")
 	commandStdin = flag.String("stdin", "", "data to pass into the command stdin")
 	command = flag.String("command", "whoami /all", "command to execute")
+	hostKeyCallback ssh.HostKeyCallback
 )
 
 func main() {
@@ -29,13 +31,14 @@ func main() {
 
 	flag.Parse()
 
-	if strings.HasPrefix(*sshKeyFile, "~/") {
-		u, err := user.Current()
-		if err != nil {
-			log.Fatalf("Failed to get current user: %v", err)
-		}
-		*sshKeyFile = path.Join(u.HomeDir, (*sshKeyFile)[2:])
+	expandTildePath(sshKeyFile)
+	expandTildePath(sshKnownHostsFile)
+
+	hkc, err := knownhosts.New(*sshKnownHostsFile)
+	if err != nil {
+		log.Fatalf("Failed to load the ssh %s known hosts file: %v", *sshKnownHostsFile, err)
 	}
+	hostKeyCallback = hkc
 
 	log.Printf("Executing the %s command...", *command)
 
@@ -44,14 +47,21 @@ func main() {
 	log.Printf("Command output: %s", output)
 }
 
+func expandTildePath(p *string) {
+	if strings.HasPrefix(*p, "~/") {
+		u, err := user.Current()
+		if err != nil {
+			log.Fatalf("Failed to get current user: %v", err)
+		}
+		*p = path.Join(u.HomeDir, (*p)[2:])
+	}
+}
+
 func executeCommand(stdin string, command string) string {
 	config := &ssh.ClientConfig{
 		User: *sshUsername,
 		Auth: []ssh.AuthMethod{},
-		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
-			log.Printf("TODO validate the host %s key %v and return a proper error", hostname, key)
-			return nil
-		},
+		HostKeyCallback: hostKeyCallback,
 	}
 
 	if *sshKeyFile != "" {
