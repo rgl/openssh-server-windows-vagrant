@@ -78,6 +78,7 @@ Copy-Item -Force *.pub c:/vagrant/tmp
 Pop-Location
 
 Write-Host 'Generating a new SSH key at tmp/id_rsa and granting it access to the vagrant account...'
+Remove-Item -ErrorAction SilentlyContinue c:/vagrant/tmp/id_rsa,c:/vagrant/tmp/id_rsa.pub
 cmd /c 'c:/OpenSSH/ssh-keygen -q -f c:/vagrant/tmp/id_rsa -t rsa -b 2048 -C test -N ""'
 mkdir -Force C:\Users\vagrant\.ssh | Out-Null
 [IO.File]::WriteAllLines(
