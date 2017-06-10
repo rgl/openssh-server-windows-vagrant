@@ -29,12 +29,17 @@ find \
     >~/.ssh/known_hosts
 '@
 
-# TODO for some reason this does NOT produce any output when run from Vagrant, but on the machine itself it does!
+Write-Output 'Importing the ssh key...'
+Bash @'
+mkdir -p ~/.ssh
+cp /c/vagrant/tmp/id_rsa* ~/.ssh
+'@
+
 Write-Output 'Running a command on the sshd host with the cygwin ssh client (you should see the "whoami /all" command output)...'
-Bash 'ssh -i /c/vagrant/tmp/id_rsa sshd.example.com "whoami /all"'
+Bash 'ssh sshd.example.com "whoami /all"'
 
 Write-Output 'Sending a file to the sshd host with the cygwin scp client...'
-Bash 'scp -i /c/vagrant/tmp/id_rsa cygwin.ps1 sshd.example.com:/tmp/example-powershell-cygwin-scp.ps1'
+Bash 'scp cygwin.ps1 sshd.example.com:/tmp/example-powershell-cygwin-scp.ps1'
 
 Write-Output 'Sending a file to the sshd host with the cygwin sftp client...'
-Bash 'echo put cygwin.ps1 /tmp/example-powershell-cygwin-sftp.ps1 | sftp -b - -i /c/vagrant/tmp/id_rsa sshd.example.com'
+Bash 'echo put cygwin.ps1 /tmp/example-powershell-cygwin-sftp.ps1 | sftp -b - sshd.example.com'

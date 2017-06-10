@@ -20,6 +20,10 @@ Vagrant.configure('2') do |config|
     config.vm.provision :reload
   end
 
+  config.trigger.after :up, :vm => 'sshd' do
+    run 'chmod 600 tmp/id_rsa' unless ENV['OS'] == 'Windows_NT'
+  end
+
   config.vm.define :windows do |config|
     config.vm.box = 'windows-2016-amd64'
     config.vm.hostname = 'windows'

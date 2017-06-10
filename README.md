@@ -8,6 +8,12 @@ In this environment you'll also find [several language examples](examples/) on h
 
 [Build and install the base image](https://github.com/rgl/windows-2016-vagrant).
 
+Install the needed plugins:
+
+```bash
+vagrant plugin install vagrant-triggers # see https://github.com/emyl/vagrant-triggers
+```
+
 Launch the SSH server machine:
 
 ```bash
