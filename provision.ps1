@@ -70,7 +70,7 @@ if ($LASTEXITCODE) {
     throw "Failed to run ssh-keygen with exit code $LASTEXITCODE"
 }
 Set-Service sshd -StartupType Automatic
-cmd /c 'sc failure sshd reset= 0 actions= restart/1000/restart/1000/restart/1000'
+sc.exe failure sshd reset= 0 actions= restart/1000
 New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH | Out-Null
 Write-Host 'Saving the server public keys in the Vagrant shared folder at tmp/...'
 mkdir -Force c:/vagrant/tmp | Out-Null
@@ -79,7 +79,7 @@ Pop-Location
 
 Write-Host 'Generating a new SSH key at tmp/id_rsa and granting it access to the vagrant account...'
 Remove-Item -ErrorAction SilentlyContinue c:/vagrant/tmp/id_rsa,c:/vagrant/tmp/id_rsa.pub
-cmd /c 'c:/OpenSSH/ssh-keygen -q -f c:/vagrant/tmp/id_rsa -t rsa -b 2048 -C test -N ""'
+c:/OpenSSH/ssh-keygen.exe -q -f c:/vagrant/tmp/id_rsa -t rsa -b 2048 -C test -N '""'
 mkdir -Force C:\Users\vagrant\.ssh | Out-Null
 [IO.File]::WriteAllLines(
     'C:\Users\vagrant\.ssh\authorized_keys',
