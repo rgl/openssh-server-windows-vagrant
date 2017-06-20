@@ -69,7 +69,7 @@ Push-Location C:\OpenSSH
 if ($LASTEXITCODE) {
     throw "Failed to run ssh-keygen with exit code $LASTEXITCODE"
 }
-.\FixHostFilePermissions.ps1 -Quiet
+.\FixHostFilePermissions.ps1 -Confirm:$false
 Set-Service sshd -StartupType Automatic
 sc.exe failure sshd reset= 0 actions= restart/1000
 New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH | Out-Null
