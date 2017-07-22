@@ -53,5 +53,5 @@ vagrant up windows
 Then login into the Windows Desktop through VirtualBox, and inside a PowerShell window run:
 
 ```powershell
-c:/OpenSSH/ssh -i c:/vagrant/tmp/id_rsa vagrant@sshd.example.com "whoami /all"
+&'C:/Program Files/OpenSSH/ssh' -i c:/vagrant/tmp/id_rsa vagrant@sshd.example.com "whoami /all"
 ```

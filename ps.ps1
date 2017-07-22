@@ -50,13 +50,32 @@ function Install-ZippedApplication($destinationPath, $name, $url, $expectedHash,
     Remove-Item $localZipPath
 }
 
+$openSshHome = 'C:\Program Files\OpenSSH'
+
 function Install-OpenSshBinaries {
+    if (Test-Path 'C:\Program Files\OpenSSH\uninstall.exe') {
+        Write-Host 'Uninstalling the existing mls OpenSSH service...'
+        Stop-Service OpenSSHd
+        $p = Start-Process `
+            -PassThru `
+            -Wait `
+            -FilePath 'C:\Program Files\OpenSSH\uninstall.exe' `
+            -ArgumentList '/S'
+        if ($p.ExitCode) {
+            throw "Failed to uninstall mls OpenSSH server with exit code $($p.ExitCode)"
+        }
+    }
+    if (Test-Path "$openSshHome\uninstall-sshd.ps1") {
+        Write-Host 'Uninstalling the existing Win32-OpenSSH service...'
+        &"$openSshHome\uninstall-sshd.ps1"
+        Remove-Item -Recurse $openSshHome
+    }
     Install-ZippedApplication `
-        C:\OpenSSH `
+        $openSshHome `
         OpenSSH `
-        https://github.com/PowerShell/Win32-OpenSSH/releases/download/v0.0.16.0/OpenSSH-Win64.zip `
-        2cc0901c085592ee64fa89c324040f46ef8b64ef8c22655e823e39981dcb2b2e
-    Push-Location C:\OpenSSH
+        https://github.com/PowerShell/Win32-OpenSSH/releases/download/v0.0.18.0/OpenSSH-Win64.zip `
+        5dae3539b250636ff3d99c007d9325a6c3a337a8a289848712ffd73d0daf5ba7
+    Push-Location $openSshHome
     Move-Item OpenSSH-Win64\* .
     Remove-Item OpenSSH-Win64
     Pop-Location
