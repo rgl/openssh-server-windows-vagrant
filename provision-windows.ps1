@@ -1,57 +1,5 @@
-# set keyboard layout.
-# NB you can get the name from the list:
-#      [System.Globalization.CultureInfo]::GetCultures('InstalledWin32Cultures') | out-gridview
-Set-WinUserLanguageList pt-PT -Force
-
-# set the date format, number format, etc.
-Set-Culture pt-PT
-
-# set the timezone.
-# tzutil /l lists all available timezone ids
-& $env:windir\system32\tzutil /s "GMT Standard Time"
-
-# show window content while dragging.
-Set-ItemProperty -Path 'HKCU:Control Panel\Desktop' -Name DragFullWindows -Value 1
-
-# show hidden files.
-Set-ItemProperty -Path HKCU:Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name Hidden -Value 1
-
-# show file extensions.
-Set-ItemProperty -Path HKCU:Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name HideFileExt -Value 0
-
-# display full path in the title bar.
-New-Item -Path HKCU:Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState -Force `
-    | New-ItemProperty -Name FullPath -Value 1 -PropertyType DWORD `
-    | Out-Null
-
-# install chocolatey.
-iex ((New-Object Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
-# install Google Chrome.
-# see https://www.chromium.org/administrators/configuring-other-preferences
-choco install -y googlechrome
-$chromeLocation = 'C:\Program Files (x86)\Google\Chrome\Application'
-cp -Force GoogleChrome-external_extensions.json (Get-Item "$chromeLocation\*\default_apps\external_extensions.json").FullName
-cp -Force GoogleChrome-master_preferences.json "$chromeLocation\master_preferences"
-cp -Force GoogleChrome-master_bookmarks.html "$chromeLocation\master_bookmarks.html"
-
 # install visual studio code.
 choco install -y visualstudiocode
-
-# replace notepad with notepad++.
-choco install -y notepadplusplus.install
-[IO.File]::WriteAllText(
-    'C:\Program Files\Notepad++\launch.js',
-    @'
-var cmd = '"C:\\Program Files\\Notepad++\\notepad++.exe" -multiInst';
-for (var n = 1; n < WSH.Arguments.Length; ++n) {
-    cmd += ' "' + WSH.Arguments.Item(n) + '"'; // TODO do proper escaping.
-}
-//WSH.echo(cmd);
-WSH.CreateObject("WScript.Shell").Run(cmd);
-'@)
-New-Item -Force -Path 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\notepad.exe' `
-    | Set-ItemProperty -Name Debugger -Value 'wscript "C:\Program Files\Notepad++\launch.js"'
 
 # install git and related applications.
 choco install -y git --params '/GitOnlyOnPath /NoAutoCrlf'

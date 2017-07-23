@@ -16,6 +16,7 @@ Vagrant.configure('2') do |config|
     config.vm.box = 'windows-2016-amd64'
     config.vm.hostname = 'sshd'
     config.vm.network :private_network, ip: config_sshd_ip
+    config.vm.provision :shell, path: 'ps.ps1', args: 'provision-common.ps1'
     config.vm.provision :shell, path: 'ps.ps1', args: 'provision.ps1'
     config.vm.provision :reload
   end
@@ -29,6 +30,7 @@ Vagrant.configure('2') do |config|
     config.vm.hostname = 'windows'
     config.vm.network :private_network, ip: config_windows_ip
     config.vm.provision :shell, inline: "echo '#{config_sshd_ip} #{config_sshd_fqdn}' | Out-File -Encoding ASCII -Append c:/Windows/System32/drivers/etc/hosts"
+    config.vm.provision :shell, path: 'ps.ps1', args: 'provision-common.ps1'
     config.vm.provision :shell, path: 'ps.ps1', args: 'provision-windows.ps1'
     config.vm.provision :shell, path: 'ps.ps1', args: 'examples/powershell/cygwin.ps1'
     config.vm.provision :shell, path: 'ps.ps1', args: 'examples/powershell/native.ps1'
