@@ -43,13 +43,6 @@ parser.add_argument(
     help='an integer for the accumulator')
 args = parser.parse_args()
 
-hostname = '10.10.10.100'
-port = 22
-username = 'vagrant'
-password = 'vagrant'
-key_filename = 'c:/vagrant/tmp/id_rsa'
-command = 'whoami /all'
-
 client = SSHClient()
 # TODO verify the host key.
 #client.load_system_host_keys()
