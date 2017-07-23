@@ -30,6 +30,50 @@ New-Item -Path HKCU:Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetSt
 # set default Explorer location to This PC.
 Set-ItemProperty -Path HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name LaunchTo -Value 1
 
+# set the desktop wallpaper.
+Add-Type -AssemblyName System.Drawing
+$backgroundColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
+$backgroundPath = 'C:\Windows\Web\Wallpaper\Windows\openssh.png'
+$logo = [System.Drawing.Image]::FromFile((Resolve-Path 'openssh.png'))
+$b = New-Object System.Drawing.Bitmap($logo.Width, $logo.Height)
+$g = [System.Drawing.Graphics]::FromImage($b)
+$g.Clear($backgroundColor)
+$g.DrawImage($logo, 0, 0, $logo.Width, $logo.Height)
+$b.Save($backgroundPath)
+Set-ItemProperty -Path 'HKCU:Control Panel\Desktop' -Name Wallpaper -Value $backgroundPath
+Set-ItemProperty -Path 'HKCU:Control Panel\Desktop' -Name WallpaperStyle -Value 0
+Set-ItemProperty -Path 'HKCU:Control Panel\Desktop' -Name TileWallpaper -Value 0
+Set-ItemProperty -Path 'HKCU:Control Panel\Colors' -Name Background -Value ($backgroundColor.R,$backgroundColor.G,$backgroundColor.B -join ' ')
+Add-Type @'
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+
+public static class WindowsWallpaper
+{
+    private const int COLOR_DESKTOP = 0x01;
+
+    [DllImport("user32", SetLastError=true)]
+    private static extern bool SetSysColors(int cElements, int[] lpaElements, int[] lpaRgbValues);
+
+    private const uint SPI_SETDESKWALLPAPER = 0x14;
+    private const uint SPIF_UPDATEINIFILE = 0x01;
+    private const uint SPIF_SENDWININICHANGE = 0x02;
+
+    [DllImport("user32", SetLastError=true)]
+    private static extern bool SystemParametersInfo(uint uiAction, uint uiParam, string pvParam, uint fWinIni);
+
+    public static void Set(Color color, string path)
+    {
+        var elements = new int[] { COLOR_DESKTOP };
+        var colors = new int[] { ColorTranslator.ToWin32(color) };
+        SetSysColors(elements.Length, elements, colors);
+        SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, path, SPIF_SENDWININICHANGE);
+    }
+}
+'@ -ReferencedAssemblies System.Drawing
+[WindowsWallpaper]::Set($backgroundColor, $backgroundPath)
+
 # install chocolatey.
 iex ((New-Object Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
