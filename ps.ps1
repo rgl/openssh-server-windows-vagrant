@@ -64,6 +64,7 @@ function Install-OpenSshBinaries {
         if ($p.ExitCode) {
             throw "Failed to uninstall mls OpenSSH server with exit code $($p.ExitCode)"
         }
+        Remove-Item -Force -Recurse 'C:\Program Files\OpenSSH'
     }
     if (Test-Path "$openSshHome\uninstall-sshd.ps1") {
         Write-Host 'Uninstalling the existing Win32-OpenSSH service...'
@@ -73,8 +74,8 @@ function Install-OpenSshBinaries {
     Install-ZippedApplication `
         $openSshHome `
         OpenSSH `
-        https://github.com/PowerShell/Win32-OpenSSH/releases/download/v0.0.18.0/OpenSSH-Win64.zip `
-        5dae3539b250636ff3d99c007d9325a6c3a337a8a289848712ffd73d0daf5ba7
+        https://github.com/PowerShell/Win32-OpenSSH/releases/download/v0.0.20.0/OpenSSH-Win64.zip `
+        0ec943c01dca48aff0c2e0bf6508270ab4cd368019c8297593d6d50c2e52359f
     Push-Location $openSshHome
     Move-Item OpenSSH-Win64\* .
     Remove-Item OpenSSH-Win64
