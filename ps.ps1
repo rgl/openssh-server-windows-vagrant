@@ -4,9 +4,8 @@ param(
 )
 
 Set-StrictMode -Version Latest
-
+$ProgressPreference = 'SilentlyContinue'
 $ErrorActionPreference = 'Stop'
-
 trap {
     Write-Output "ERROR: $_"
     Write-Output (($_.ScriptStackTrace -split '\r?\n') -replace '^(.*)$','ERROR: $1')
@@ -74,8 +73,8 @@ function Install-OpenSshBinaries {
     Install-ZippedApplication `
         $openSshHome `
         OpenSSH `
-        https://github.com/PowerShell/Win32-OpenSSH/releases/download/v0.0.20.0/OpenSSH-Win64.zip `
-        0ec943c01dca48aff0c2e0bf6508270ab4cd368019c8297593d6d50c2e52359f
+        https://github.com/PowerShell/Win32-OpenSSH/releases/download/v0.0.23.0/OpenSSH-Win64.zip `
+        e52e363ffc4e284464049af0e92e3a9df0355b7f4e1d4eb622205c802716f36c
     Push-Location $openSshHome
     Move-Item OpenSSH-Win64\* .
     Remove-Item OpenSSH-Win64
