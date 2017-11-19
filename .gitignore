@@ -4,3 +4,8 @@ tmp/
 bin/
 obj/
 *.exe
+.classpath
+.gradle/
+.project
+.settings/
+build/

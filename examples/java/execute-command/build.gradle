@@ -1,0 +1,31 @@
+// see https://docs.gradle.org/3.1/userguide/java_plugin.html
+// see https://docs.gradle.org/3.1/userguide/application_plugin.html
+
+apply plugin: 'application'
+
+mainClassName = 'Example'
+version = '1.0.0'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// NB we cannot use a shadow/fat jar with bouncy castle because that would
+//    destroy the bouncy castle jce provider signature.
+jar {
+    manifest {
+        attributes(
+            'Implementation-Title': 'SSH Example',
+            'Implementation-Version': version,
+            'Main-Class': mainClassName
+        )
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'com.beust:jcommander:1.71'
+    compile 'org.slf4j:slf4j-simple:1.7.25'
+    compile 'com.hierynomus:sshj:0.23.0'
+}
