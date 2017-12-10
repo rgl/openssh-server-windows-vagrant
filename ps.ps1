@@ -13,6 +13,11 @@ trap {
     Exit 1
 }
 
+# enable TLS 1.1 and 1.2.
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol `
+    -bor [Net.SecurityProtocolType]::Tls11 `
+    -bor [Net.SecurityProtocolType]::Tls12
+
 # wrap the choco command (to make sure this script aborts when it fails).
 function Start-Choco([string[]]$Arguments, [int[]]$SuccessExitCodes=@(0)) {
     $command, $commandArguments = $Arguments
@@ -40,7 +45,7 @@ function choco {
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 function Install-ZippedApplication($destinationPath, $name, $url, $expectedHash, $expectedHashAlgorithm='SHA256') {
     $localZipPath = "$env:TEMP\$name.zip"
-    Invoke-WebRequest $url -OutFile $localZipPath
+    (New-Object Net.WebClient).DownloadFile($url, $localZipPath)
     $actualHash = (Get-FileHash $localZipPath -Algorithm $expectedHashAlgorithm).Hash
     if ($actualHash -ne $expectedHash) {
         throw "$name downloaded from $url to $localZipPath has $actualHash hash that does not match the expected $expectedHash"
@@ -73,8 +78,8 @@ function Install-OpenSshBinaries {
     Install-ZippedApplication `
         $openSshHome `
         OpenSSH `
-        https://github.com/PowerShell/Win32-OpenSSH/releases/download/v0.0.23.0/OpenSSH-Win64.zip `
-        e52e363ffc4e284464049af0e92e3a9df0355b7f4e1d4eb622205c802716f36c
+        https://github.com/PowerShell/Win32-OpenSSH/releases/download/0.0.24.0/OpenSSH-Win64.zip `
+        b25648e6765e979929a9888b482f736776014dad252d4dee43f990683d70f9e3
     Push-Location $openSshHome
     Move-Item OpenSSH-Win64\* .
     Remove-Item OpenSSH-Win64
