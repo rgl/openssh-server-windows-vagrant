@@ -8,29 +8,32 @@ Install-ChocolateyShortcut `
 
 Write-Host 'Installing the PowerShell/Win32-OpenSSH service...'
 # see https://github.com/PowerShell/Win32-OpenSSH/wiki/Install-Win32-OpenSSH
+# NB Binaries are in $openSshHome (C:\Program Files\OpenSSH).
+# NB Configuration, keys, and logs are in $openSshConfigHome (C:\ProgramData\ssh).
 Install-OpenSshBinaries
-Push-Location $openSshHome
-. .\install-sshd.ps1
-.\ssh-keygen.exe -A
+$openSshConfigHome = 'C:\ProgramData\ssh'
+&"$openSshHome\install-sshd.ps1"
+&"$openSshHome\ssh-keygen.exe" -A
 if ($LASTEXITCODE) {
     throw "Failed to run ssh-keygen with exit code $LASTEXITCODE"
 }
 Set-Content `
     -Encoding Ascii `
-    sshd_config `
+    "$openSshConfigHome\sshd_config" `
     ( `
-        (Get-Content sshd_config) `
+        (Get-Content "$openSshConfigHome\sshd_config") `
             -replace '#?\s*UseDNS .+','UseDNS no' `
     )
-.\FixHostFilePermissions.ps1 -Confirm:$false
-Set-Service sshd -StartupType Automatic
-sc.exe failure sshd reset= 0 actions= restart/1000
-sc.exe failure ssh-agent reset= 0 actions= restart/1000
+&"$openSshHome\FixHostFilePermissions.ps1" -Confirm:$false
+'sshd','ssh-agent' | ForEach-Object {
+    Set-Service $_ -StartupType Automatic
+    sc.exe failure $_ reset= 0 actions= restart/1000
+}
+sc.exe config sshd depend= ssh-agent
 New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH | Out-Null
 Write-Host 'Saving the server public keys in the Vagrant shared folder at tmp/...'
 mkdir -Force c:/vagrant/tmp | Out-Null
-Copy-Item -Force *.pub c:/vagrant/tmp
-Pop-Location
+Copy-Item -Force "$openSshConfigHome\*.pub" c:/vagrant/tmp
 
 Write-Host 'Generating a new SSH key at tmp/id_rsa and granting it access to the vagrant account...'
 Remove-Item -ErrorAction SilentlyContinue c:/vagrant/tmp/id_rsa,c:/vagrant/tmp/id_rsa.pub
@@ -39,9 +42,3 @@ mkdir -Force C:\Users\vagrant\.ssh | Out-Null
 [IO.File]::WriteAllLines(
     'C:\Users\vagrant\.ssh\authorized_keys',
     [IO.File]::ReadAllLines('c:/vagrant/tmp/id_rsa.pub'))
-
-Write-Host 'Granting the ssh server read access to the vagrant authorized_keys file...'
-$authorizedKeyPath = 'C:\Users\vagrant\.ssh\authorized_keys'
-$acl = Get-Acl $authorizedKeyPath
-$acl.SetAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule 'NT Service\sshd','Read','Allow'))
-Set-Acl $authorizedKeyPath $acl
