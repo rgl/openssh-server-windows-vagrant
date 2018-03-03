@@ -3,13 +3,13 @@
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
 
 # install the dotnet sdk.
-# see https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.3.md
-$cliVersion = '2.0.3'
+# see https://github.com/dotnet/core/blob/master/release-notes/2.0/2.0.5.md
+$cliVersion = '2.1.4'
 $cliHome = "c:\ProgramData\dotnet-sdk-$cliVersion"
 $archiveName = "dotnet-sdk-$cliVersion-win-x64.zip"
 $archivePath = "$env:TEMP\$archiveName"
 Write-Host "Downloading $archiveName..."
-Invoke-WebRequest "https://download.microsoft.com/download/D/7/2/D725E47F-A4F1-4285-8935-A91AE2FCC06A/$archiveName" -UseBasicParsing -OutFile $archivePath
+Invoke-WebRequest "https://download.microsoft.com/download/1/1/5/115B762D-2B41-4AF3-9A63-92D9680B9409/$archiveName" -UseBasicParsing -OutFile $archivePath
 Expand-Archive $archivePath -DestinationPath $cliHome
 Remove-Item $archivePath
 
