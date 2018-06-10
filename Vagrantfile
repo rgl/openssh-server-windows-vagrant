@@ -21,8 +21,9 @@ Vagrant.configure('2') do |config|
     config.vm.provision :reload
   end
 
-  config.trigger.after :up, :vm => 'sshd' do
-    run 'chmod 600 tmp/id_rsa' unless ENV['OS'] == 'Windows_NT'
+  config.trigger.after :up do |trigger|
+    trigger.only_on = 'sshd'
+    trigger.run = {inline: 'chmod 600 tmp/id_rsa'} unless ENV['OS'] == 'Windows_NT'
   end
 
   config.vm.define :windows do |config|
