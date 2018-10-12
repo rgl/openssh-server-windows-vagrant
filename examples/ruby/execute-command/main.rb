@@ -15,7 +15,7 @@ Net::SSH.start(
         :port => port,
         :password => password,
         :keys => [key_filename],
-        :verify_host_key => :secure, # validate the server key against ~/.ssh/known_hosts
+        :verify_host_key => :always, # validate the server key against ~/.ssh/known_hosts
         :non_interactive => true
     ) do |ssh| # ssh is-a Net::SSH::Connection::Session
     puts "connected to #{ssh.transport.socket.peer_ip} (#{ssh.transport.server_version.version})"
