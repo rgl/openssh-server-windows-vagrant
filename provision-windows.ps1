@@ -1,5 +1,5 @@
 # install visual studio code.
-choco install -y visualstudiocode
+choco install -y vscode
 
 # install git and related applications.
 choco install -y git --params '/GitOnlyOnPath /NoAutoCrlf'
