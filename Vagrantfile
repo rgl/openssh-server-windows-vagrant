@@ -1,9 +1,20 @@
+# to make sure the sshd node is created before the other nodes, we
+# have to force a --no-parallel execution.
+ENV['VAGRANT_NO_PARALLEL'] = 'yes'
+
 config_sshd_fqdn    = 'sshd.example.com'
 config_sshd_ip      = '10.10.10.100'
 config_windows_fqdn = "windows.#{config_sshd_fqdn}"
 config_windows_ip   = '10.10.10.102'
 
 Vagrant.configure('2') do |config|
+  config.vm.provider :libvirt do |lv, config|
+    lv.cpus = 2
+    lv.memory = 2048
+    lv.keymap = 'pt'
+    config.vm.synced_folder '.', '/vagrant', type: 'smb', smb_username: ENV['USER'], smb_password: ENV['VAGRANT_SMB_PASSWORD']
+  end
+
   config.vm.provider :virtualbox do |v, override|
     v.linked_clone = true
     v.cpus = 2
