@@ -42,12 +42,14 @@ func main() {
 
 	log.Printf("Executing the %s command...", *command)
 
-	output, err := executeCommand(*commandStdin, *command)
+	exitCode, output, err := executeCommand(*commandStdin, *command)
 	if err != nil {
 		log.Fatalf("failed to execute command: %w", err)
 	}
 
-	log.Printf("Command output: %s", output)
+	log.Printf("Command ended with exit code %d and output:\n%s", exitCode, output)
+
+	os.Exit(exitCode)
 }
 
 func expandTildePath(p *string) {
@@ -60,7 +62,7 @@ func expandTildePath(p *string) {
 	}
 }
 
-func executeCommand(stdin string, command string) (string, error) {
+func executeCommand(stdin string, command string) (int, string, error) {
 	config := &ssh.ClientConfig{
 		User:            *sshUsername,
 		Auth:            []ssh.AuthMethod{},
@@ -70,12 +72,12 @@ func executeCommand(stdin string, command string) (string, error) {
 	if *sshKeyFile != "" {
 		key, err := ioutil.ReadFile(*sshKeyFile)
 		if err != nil {
-			return "", fmt.Errorf("unable to read private key: %w", err)
+			return -1, "", fmt.Errorf("unable to read private key: %w", err)
 		}
 
 		signer, err := ssh.ParsePrivateKey(key)
 		if err != nil {
-			return "", fmt.Errorf("unable to parse private key: %w", err)
+			return -1, "", fmt.Errorf("unable to parse private key: %w", err)
 		}
 
 		config.Auth = append(config.Auth, ssh.PublicKeys(signer))
@@ -89,7 +91,7 @@ func executeCommand(stdin string, command string) (string, error) {
 
 	client, err := ssh.Dial("tcp", *sshServer, config)
 	if err != nil {
-		return "", fmt.Errorf("unable to connect: %w", err)
+		return -1, "", fmt.Errorf("unable to connect: %w", err)
 	}
 	defer client.Close()
 
@@ -103,7 +105,7 @@ func executeCommand(stdin string, command string) (string, error) {
 
 	session, err := client.NewSession()
 	if err != nil {
-		return "", fmt.Errorf("Failed to create session: %w", err)
+		return -1, "", fmt.Errorf("Failed to create session: %w", err)
 	}
 	defer session.Close()
 
@@ -113,8 +115,11 @@ func executeCommand(stdin string, command string) (string, error) {
 
 	output, err := session.CombinedOutput(command)
 	if err != nil {
-		return "", fmt.Errorf("Failed to run command: %w", err)
+		if e, ok := err.(*ssh.ExitError); ok {
+			return e.ExitStatus(), string(output), nil
+		}
+		return -1, "", fmt.Errorf("Failed to run command: %w", err)
 	}
 
-	return string(output), nil
+	return 0, string(output), nil
 }
