@@ -16,14 +16,14 @@ import (
 )
 
 var (
-	sshUsername = flag.String("username", "vagrant", "ssh username")
-	sshPassword = flag.String("password", "", "ssh password")
-	sshServer = flag.String("addr", "10.10.10.100:22", "ssh server address:port")
-	sshKeyFile = flag.String("keyFile", "", "ssh client private key")
+	sshUsername       = flag.String("username", "vagrant", "ssh username")
+	sshPassword       = flag.String("password", "", "ssh password")
+	sshServer         = flag.String("addr", "10.10.10.100:22", "ssh server address:port")
+	sshKeyFile        = flag.String("keyFile", "", "ssh client private key")
 	sshKnownHostsFile = flag.String("knownHostsFile", "~/.ssh/known_hosts", "ssh known hosts")
-	commandStdin = flag.String("stdin", "", "data to pass into the command stdin")
-	command = flag.String("command", "whoami /all", "command to execute")
-	hostKeyCallback ssh.HostKeyCallback
+	commandStdin      = flag.String("stdin", "", "data to pass into the command stdin")
+	command           = flag.String("command", "whoami /all", "command to execute")
+	hostKeyCallback   ssh.HostKeyCallback
 )
 
 func main() {
@@ -36,13 +36,16 @@ func main() {
 
 	hkc, err := knownhosts.New(*sshKnownHostsFile)
 	if err != nil {
-		log.Fatalf("Failed to load the ssh %s known hosts file: %v", *sshKnownHostsFile, err)
+		log.Fatalf("Failed to load the ssh %s known hosts file: %w", *sshKnownHostsFile, err)
 	}
 	hostKeyCallback = hkc
 
 	log.Printf("Executing the %s command...", *command)
 
-	output := executeCommand(*commandStdin, *command)
+	output, err := executeCommand(*commandStdin, *command)
+	if err != nil {
+		log.Fatalf("failed to execute command: %w", err)
+	}
 
 	log.Printf("Command output: %s", output)
 }
@@ -57,22 +60,22 @@ func expandTildePath(p *string) {
 	}
 }
 
-func executeCommand(stdin string, command string) string {
+func executeCommand(stdin string, command string) (string, error) {
 	config := &ssh.ClientConfig{
-		User: *sshUsername,
-		Auth: []ssh.AuthMethod{},
+		User:            *sshUsername,
+		Auth:            []ssh.AuthMethod{},
 		HostKeyCallback: hostKeyCallback,
 	}
 
 	if *sshKeyFile != "" {
 		key, err := ioutil.ReadFile(*sshKeyFile)
 		if err != nil {
-			return fmt.Sprintf("unable to read private key: %v", err)
+			return "", fmt.Errorf("unable to read private key: %w", err)
 		}
 
 		signer, err := ssh.ParsePrivateKey(key)
 		if err != nil {
-			return fmt.Sprintf("unable to parse private key: %v", err)
+			return "", fmt.Errorf("unable to parse private key: %w", err)
 		}
 
 		config.Auth = append(config.Auth, ssh.PublicKeys(signer))
@@ -86,7 +89,7 @@ func executeCommand(stdin string, command string) string {
 
 	client, err := ssh.Dial("tcp", *sshServer, config)
 	if err != nil {
-		return fmt.Sprintf("unable to connect: %v", err)
+		return "", fmt.Errorf("unable to connect: %w", err)
 	}
 	defer client.Close()
 
@@ -100,7 +103,7 @@ func executeCommand(stdin string, command string) string {
 
 	session, err := client.NewSession()
 	if err != nil {
-		return fmt.Sprintf("Failed to create session: %v", err)
+		return "", fmt.Errorf("Failed to create session: %w", err)
 	}
 	defer session.Close()
 
@@ -110,8 +113,8 @@ func executeCommand(stdin string, command string) string {
 
 	output, err := session.CombinedOutput(command)
 	if err != nil {
-		return fmt.Sprintf("Failed to run command: %v", err)
+		return "", fmt.Errorf("Failed to run command: %w", err)
 	}
 
-	return string(output)
+	return string(output), nil
 }
