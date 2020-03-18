@@ -19,7 +19,7 @@ var (
 	sshUsername       = flag.String("username", "vagrant", "ssh username")
 	sshPassword       = flag.String("password", "", "ssh password")
 	sshServer         = flag.String("addr", "10.10.10.100:22", "ssh server address:port")
-	sshKeyFile        = flag.String("keyFile", "", "ssh client private key")
+	sshKeyFile        = flag.String("keyFile", "~/.ssh/id_rsa", "ssh client private key")
 	sshKnownHostsFile = flag.String("knownHostsFile", "~/.ssh/known_hosts", "ssh known hosts")
 	commandStdin      = flag.String("stdin", "", "data to pass into the command stdin")
 	command           = flag.String("command", "whoami /all", "command to execute")
@@ -69,7 +69,9 @@ func executeCommand(stdin string, command string) (int, string, error) {
 		HostKeyCallback: hostKeyCallback,
 	}
 
-	if *sshKeyFile != "" {
+	if *sshPassword != "" {
+		config.Auth = append(config.Auth, ssh.Password(*sshPassword))
+	} else if *sshKeyFile != "" {
 		key, err := ioutil.ReadFile(*sshKeyFile)
 		if err != nil {
 			return -1, "", fmt.Errorf("unable to read private key: %w", err)
@@ -81,10 +83,6 @@ func executeCommand(stdin string, command string) (int, string, error) {
 		}
 
 		config.Auth = append(config.Auth, ssh.PublicKeys(signer))
-	}
-
-	if *sshPassword != "" {
-		config.Auth = append(config.Auth, ssh.Password(*sshPassword))
 	}
 
 	log.Printf("Connecting to %s...", *sshServer)
