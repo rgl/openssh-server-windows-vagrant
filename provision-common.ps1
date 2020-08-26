@@ -31,19 +31,6 @@ New-Item -Path HKCU:Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetSt
 Set-ItemProperty -Path HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name LaunchTo -Value 1
 
 # set the desktop wallpaper.
-Add-Type -AssemblyName System.Drawing
-$backgroundColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
-$backgroundPath = 'C:\Windows\Web\Wallpaper\Windows\openssh.png'
-$logo = [System.Drawing.Image]::FromFile((Resolve-Path 'openssh.png'))
-$b = New-Object System.Drawing.Bitmap($logo.Width, $logo.Height)
-$g = [System.Drawing.Graphics]::FromImage($b)
-$g.Clear($backgroundColor)
-$g.DrawImage($logo, 0, 0, $logo.Width, $logo.Height)
-$b.Save($backgroundPath)
-Set-ItemProperty -Path 'HKCU:Control Panel\Desktop' -Name Wallpaper -Value $backgroundPath
-Set-ItemProperty -Path 'HKCU:Control Panel\Desktop' -Name WallpaperStyle -Value 0
-Set-ItemProperty -Path 'HKCU:Control Panel\Desktop' -Name TileWallpaper -Value 0
-Set-ItemProperty -Path 'HKCU:Control Panel\Colors' -Name Background -Value ($backgroundColor.R,$backgroundColor.G,$backgroundColor.B -join ' ')
 Add-Type @'
 using System;
 using System.Drawing;
@@ -68,11 +55,72 @@ public static class WindowsWallpaper
         var elements = new int[] { COLOR_DESKTOP };
         var colors = new int[] { ColorTranslator.ToWin32(color) };
         SetSysColors(elements.Length, elements, colors);
-        SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, path, SPIF_SENDWININICHANGE);
+        SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, path, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
     }
 }
 '@ -ReferencedAssemblies System.Drawing
-[WindowsWallpaper]::Set($backgroundColor, $backgroundPath)
+function Set-Wallpaper {
+    param (
+        [Parameter(Mandatory = $True)]
+        [ValidateSet(
+            'Fill',
+            'Fit',
+            'Stretch',
+            'Tile',
+            'Center',
+            'Span')]
+        [string]$Style,
+        [Parameter(Mandatory = $True)]
+        [System.Drawing.Color]$Color,
+        [Parameter(Mandatory = $True)]
+        [string]$Path
+    )
+    $wallpaperStyle = switch ($Style) {
+        'Fill' { '10' }
+        'Fit' { '6' }
+        'Stretch' { '2' }
+        'Span' { '22' }
+        default { '0' }
+    }
+    New-ItemProperty `
+        -Path 'HKCU:\Control Panel\Desktop' `
+        -Name WallpaperStyle `
+        -PropertyType String `
+        -Value $wallpaperStyle `
+        -Force `
+        | Out-Null
+    New-ItemProperty `
+        -Path 'HKCU:\Control Panel\Desktop' `
+        -Name TileWallpaper `
+        -PropertyType String `
+        -Value "$(if ($Style -eq 'Tile') {'1'} else {'0'})" `
+        -Force `
+        | Out-Null
+    New-ItemProperty `
+        -Path 'HKCU:\Control Panel\Desktop' `
+        -Name Wallpaper `
+        -PropertyType String `
+        -Value $Path `
+        -Force `
+        | Out-Null
+    New-ItemProperty `
+        -Path 'HKCU:\Control Panel\Colors' `
+        -Name Background `
+        -PropertyType String `
+        -Value ($Color.R,$Color.G,$Color.B -join ' ') `
+        -Force `
+        | Out-Null
+    # NB [WindowsWallpaper]::Set does not really work when running from WinRM.
+    #    that is why we still set the Wallpaper and Background registry values.
+    [WindowsWallpaper]::Set($Color, $Path)
+}
+$wallpaperSourcePath = 'openssh.png'
+$wallpaperDestinationPath = 'C:\Windows\Web\Wallpaper\Windows\openssh.png'
+Copy-Item $wallpaperSourcePath $wallpaperDestinationPath
+$wallpaperImage = [System.Drawing.Image]::FromFile($wallpaperDestinationPath)
+$wallpaperColor = $wallpaperImage.GetPixel(0, 0)
+$wallpaperImage.Dispose()
+Set-Wallpaper 'Center' $wallpaperColor $wallpaperDestinationPath
 
 # install chocolatey.
 iex ((New-Object Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
