@@ -1,5 +1,4 @@
 # build.
-go get golang.org/x/crypto/ssh
 go build
 
 # execute.
