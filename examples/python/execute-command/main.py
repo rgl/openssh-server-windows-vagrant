@@ -1,6 +1,7 @@
 import argparse
-import warnings
+import os.path
 import sys
+import warnings
 from paramiko.client import SSHClient, WarningPolicy
 
 # for not upsetting PowerShell... redirect warnings from stderr to stdout.
@@ -15,27 +16,32 @@ parser.add_argument(
     '--hostname',
     default='sshd.example.com',
     type=str,
-    help='an integer for the accumulator')
+    help='the sshd hostname')
 parser.add_argument(
     '--port',
     default=22,
     type=int,
-    help='an integer for the accumulator')
+    help='the sshd port')
 parser.add_argument(
     '--username',
     default='vagrant',
     type=str,
-    help='an integer for the accumulator')
+    help='the username')
 parser.add_argument(
     '--password',
-    default='vagrant',
+    default=None,
     type=str,
-    help='an integer for the accumulator')
+    help='the password to use (you must use --password or --key-file)')
 parser.add_argument(
-    '--key_filename',
-    default='c:/vagrant/tmp/id_rsa',
+    '--key-file',
+    default=None,
     type=str,
-    help='an integer for the accumulator')
+    help='the key to use (you must use --password or --key-file)')
+parser.add_argument(
+    '--known-hosts-file',
+    default='~/.ssh/known_hosts',
+    type=str,
+    help='known_hosts file location)')
 parser.add_argument(
     '--command',
     default='whoami /all',
@@ -71,7 +77,9 @@ client.connect(
     args.port,
     args.username,
     args.password,
-    key_filename=args.key_filename)
+    key_filename=args.key_file,
+    allow_agent=False,
+    look_for_keys=False)
 
 print('executing the %s command...' % args.command)
 stdin, stdout, stderr = client.exec_command(args.command)
