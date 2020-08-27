@@ -50,9 +50,12 @@ parser.add_argument(
 args = parser.parse_args()
 
 client = SSHClient()
-# TODO verify the host key.
-#client.load_system_host_keys()
-client.set_missing_host_key_policy(WarningPolicy())
+
+# trust the host only when inside the known_hosts file or trust any host.
+if args.known_hosts_file:
+    client.load_host_keys(os.path.expanduser(args.known_hosts_file))
+else:
+    client.set_missing_host_key_policy(WarningPolicy())
 
 # NB paramiko ONLY supports the legacy PEM private key format of:
 #       -----BEGIN RSA PRIVATE KEY-----
