@@ -6,18 +6,12 @@ In this environment you'll also find [several language examples](examples/) on h
 
 # Usage
 
-[Build and install the base image](https://github.com/rgl/windows-2016-vagrant).
-
-Install the needed plugins:
-
-```bash
-vagrant plugin install vagrant-triggers # see https://github.com/emyl/vagrant-triggers
-```
+[Build and install the Windows 2019 base image](https://github.com/rgl/windows-vagrant).
 
 Launch the SSH server machine:
 
 ```bash
-vagrant up sshd
+vagrant up sshd --no-destroy-on-error
 ```
 
 **NB** this step will also create a SSH key at `tmp/ida_rsa` which we will later use to connect to the `vagrant` account.
@@ -41,13 +35,13 @@ Host sshd
 Try accessing the ssh server at that port with the created SSH key:
 
 ```bash
-ssh -i tmp/id_rsa vagrant@localhost -p 2222 "whoami /all"
+ssh -i tmp/id_rsa vagrant@127.0.0.1 -p 2222 "whoami /all"
 ```
 
 Now try the same, but from within the Windows Client machine. First launch it:
 
 ```bash
-vagrant up windows
+vagrant up windows --no-destroy-on-error
 ```
 
 Then login into the Windows Desktop through VirtualBox, and inside a PowerShell window run:
