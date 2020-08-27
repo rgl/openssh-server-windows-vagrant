@@ -10,7 +10,7 @@ import java.io.File;
 public class Example {
     public static class Args {
         @Parameter(names = "--hostname", description="ssh hostname")
-        public String hostname = "10.10.10.100";
+        public String hostname = "sshd.example.com";
 
         @Parameter(names = "--port", description="ssh port")
         public int port = 22;

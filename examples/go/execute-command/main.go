@@ -18,7 +18,7 @@ import (
 var (
 	sshUsername       = flag.String("username", "vagrant", "ssh username")
 	sshPassword       = flag.String("password", "", "ssh password")
-	sshServer         = flag.String("addr", "10.10.10.100:22", "ssh server address:port")
+	sshServer         = flag.String("addr", "sshd.example.com:22", "ssh server address:port")
 	sshKeyFile        = flag.String("keyFile", "~/.ssh/id_rsa", "ssh client private key")
 	sshKnownHostsFile = flag.String("knownHostsFile", "~/.ssh/known_hosts", "ssh known hosts")
 	commandStdin      = flag.String("stdin", "", "data to pass into the command stdin")

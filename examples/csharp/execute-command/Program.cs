@@ -12,7 +12,7 @@ namespace ExecuteCommand
         private class Options
         {
             [Option(
-                Default="10.10.10.100:22",
+                Default="sshd.example.com:22",
                 HelpText="ssh server address:port")]
             public string Addr { get; set; }
 

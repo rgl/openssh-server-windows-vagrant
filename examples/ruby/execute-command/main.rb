@@ -1,6 +1,6 @@
 require 'net/ssh'
 
-hostname = '10.10.10.100'
+hostname = 'sshd.example.com'
 port = 22
 username = 'vagrant'
 password = 'vagrant'

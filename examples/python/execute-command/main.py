@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(
     description='execute a remote command over ssh')
 parser.add_argument(
     '--hostname',
-    default='10.10.10.100',
+    default='sshd.example.com',
     type=str,
     help='an integer for the accumulator')
 parser.add_argument(
