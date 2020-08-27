@@ -42,7 +42,7 @@ Copy-Item -Force "$openSshConfigHome\*.pub" c:/vagrant/tmp
 
 Write-Host 'Generating a new SSH key at tmp/id_rsa and granting it access to the vagrant account...'
 Remove-Item -ErrorAction SilentlyContinue c:/vagrant/tmp/id_rsa,c:/vagrant/tmp/id_rsa.pub
-&"$openSshHome/ssh-keygen.exe" -q -f c:\tmp\id_rsa -t rsa -b 2048 -C test -N '""'
+&"$openSshHome/ssh-keygen.exe" -q -f c:\tmp\id_rsa -m pem -t rsa -b 2048 -C test -N '""'
 Move-Item c:\tmp\id_rsa,c:\tmp\id_rsa.pub c:\vagrant\tmp
 mkdir -Force C:\Users\vagrant\.ssh | Out-Null
 [IO.File]::WriteAllLines(

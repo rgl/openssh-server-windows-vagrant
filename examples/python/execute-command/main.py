@@ -48,6 +48,23 @@ client = SSHClient()
 #client.load_system_host_keys()
 client.set_missing_host_key_policy(WarningPolicy())
 
+# NB paramiko ONLY supports the legacy PEM private key format of:
+#       -----BEGIN RSA PRIVATE KEY-----
+# NB it does NOT support the more recent format of:
+#       -----BEGIN OPENSSH PRIVATE KEY-----
+#    if you try, it will error with a strange error of:
+#       paramiko.ssh_exception.SSHException: Invalid key
+#       ValueError: ('Invalid private key', [
+#           _OpenSSLErrorWithText(
+#               code=67764350,
+#               lib=4,
+#               func=160,
+#               reason=126,
+#               reason_text=b'error:040A007E:rsa routines:RSA_check_key_ex:iqmp not inverse of q')])
+# NB in theory support for the new recent format was added in paramiko 2.7,
+#    but its not working for me when running in Windows.
+#    see https://github.com/paramiko/paramiko/pull/1343
+#    see https://github.com/paramiko/paramiko/issues/1517
 print('connecting to %s:%d...' % (args.hostname, args.port))
 client.connect(
     args.hostname,
