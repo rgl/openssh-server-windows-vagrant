@@ -12,6 +12,13 @@ Write-Host 'Installing the PowerShell/Win32-OpenSSH service...'
 # NB Configuration, keys, and logs are in $openSshConfigHome (C:\ProgramData\ssh).
 Install-OpenSshBinaries
 $openSshConfigHome = 'C:\ProgramData\ssh'
+$originalSshdConfig = Get-Content -Raw "$openSshHome\sshd_config_default"
+# Configure the Administrators group to also use the ~/.ssh/authorized_keys file.
+# see https://github.com/PowerShell/Win32-OpenSSH/issues/1324
+$sshdConfig = $originalSshdConfig `
+    -replace '(?m)^(Match Group administrators.*)','#$1' `
+    -replace '(?m)^(\s*AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys.*)','#$1'
+Set-Content -Encoding Ascii "$openSshConfigHome\sshd_config" $sshdConfig
 &"$openSshHome\install-sshd.ps1"
 &"$openSshHome\ssh-keygen.exe" -A
 if ($LASTEXITCODE) {
@@ -25,11 +32,9 @@ Set-Content `
             -replace '#?\s*UseDNS .+','UseDNS no' `
     )
 &"$openSshHome\FixHostFilePermissions.ps1" -Confirm:$false
-'sshd','ssh-agent' | ForEach-Object {
-    Set-Service $_ -StartupType Automatic
-    sc.exe failure $_ reset= 0 actions= restart/1000
-}
-sc.exe config sshd depend= ssh-agent
+Set-Service 'sshd' -StartupType Automatic
+sc.exe failure 'sshd' reset= 0 actions= restart/1000
+sc.exe failure 'ssh-agent' reset= 0 actions= restart/1000
 New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH | Out-Null
 Write-Host 'Saving the server public keys in the Vagrant shared folder at tmp/...'
 mkdir -Force c:/vagrant/tmp | Out-Null
