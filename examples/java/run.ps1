@@ -1,5 +1,6 @@
 # install dependencies.
-choco install -y adoptopenjdk11 gradle
+choco install -y adoptopenjdk11
+choco install -y gradle --version 7.3
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1

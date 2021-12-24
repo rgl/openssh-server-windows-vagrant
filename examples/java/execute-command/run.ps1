@@ -1,5 +1,5 @@
 # build.
-gradle build
+gradle build --warning-mode all
 if ($LASTEXITCODE) {
     Exit 1
 }
