@@ -78,15 +78,16 @@ function Install-OpenSshBinaries {
         Write-Host 'Uninstalling the existing Win32-OpenSSH service...'
         &"$openSshHome\uninstall-sshd.ps1"
         Write-Host 'Terminating the existing Win32-OpenSSH sshd processes...'
-        Get-Process sshd | Stop-Process -Force
+        Get-Process -ErrorAction SilentlyContinue sshd | Stop-Process -Force
         Start-Sleep -Seconds 5 # give the os/processes a jiffy to stop and release the files from the FS before we delete'em all.
         Remove-Item -Recurse $openSshHome
     }
+    Write-Host 'Installing Win32-OpenSSH...'
     Install-ZippedApplication `
         $openSshHome `
         OpenSSH `
-        https://github.com/PowerShell/Win32-OpenSSH/releases/download/v8.1.0.0p1-Beta/OpenSSH-Win64.zip `
-        c99240af89452610f66b7ce54c4fa3180b66aae2bc326afc2aac8fc1dd48f488
+        https://github.com/PowerShell/Win32-OpenSSH/releases/download/V8.6.0.0p1-Beta/OpenSSH-Win64.zip `
+        9f9215dc0b823264d52603f4767d8531880ddfa9aedf16404923814c0ab086b7
     Push-Location $openSshHome
     Move-Item OpenSSH-Win64\* .
     Remove-Item OpenSSH-Win64
