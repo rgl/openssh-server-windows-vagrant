@@ -16,7 +16,7 @@ function Bash($script) {
     }
 }
 
-Write-Output 'Installing the the cygwin ssh client...'
+Write-Output 'Installing the cygwin ssh client...'
 Bash 'pacman --noconfirm -Sy openssh'
 
 Write-Output 'Importing the sshd host keys...'
