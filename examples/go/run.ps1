@@ -1,5 +1,5 @@
 # install dependencies.
-choco install -y golang
+choco install -y golang --version 1.17.5
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1
