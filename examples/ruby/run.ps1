@@ -1,5 +1,5 @@
 # install dependencies.
-choco install -y ruby
+choco install -y ruby --version 3.0.3.1
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1
