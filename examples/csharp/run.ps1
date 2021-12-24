@@ -1,13 +1,13 @@
-# see https://dotnet.microsoft.com/download/dotnet-core/3.1
-# see https://github.com/dotnet/core/blob/master/release-notes/3.1/3.1.7/3.1.401-download.md
+# see https://dotnet.microsoft.com/download/dotnet/5.0
+# see https://github.com/dotnet/core/blob/main/release-notes/5.0/5.0.13/5.0.13.md
 
 # opt-out from dotnet telemetry.
 [Environment]::SetEnvironmentVariable('DOTNET_CLI_TELEMETRY_OPTOUT', '1', 'Machine')
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
 
 # install the dotnet sdk.
-$archiveUrl = 'https://download.visualstudio.microsoft.com/download/pr/547f9f81-599a-4b58-9322-d1d158385df6/ebe3e02fd54c29487ac32409cb20d352/dotnet-sdk-3.1.401-win-x64.exe'
-$archiveHash = 'd14cb0bd419e009ec4aefd06e33066c5ba0a7640c9f4b40a619fb766e8c1b33fe812f290169a029ecb991d47b6b7d777a8cb57016932c103c8f749ff6222e893'
+$archiveUrl = 'https://download.visualstudio.microsoft.com/download/pr/44069ee2-ce02-41d7-bcc5-2168a1653278/cfc5131c81ae00a5f77f05f9963ec98d/dotnet-sdk-5.0.404-win-x64.exe'
+$archiveHash = 'a2bdf552bb09a1f8315e383ca7d65b876c505de3c94dba4c5f530eddd7f03370bddd0832ef7f3cb876bb31b90cbeb8dc770ca1ce0a3a0cdf6c7bed48b30a7065'
 $archiveName = Split-Path -Leaf $archiveUrl
 $archivePath = "$env:TEMP\$archiveName"
 Write-Host "Downloading $archiveName..."
@@ -22,21 +22,6 @@ if ($LASTEXITCODE) {
     throw "Failed to install dotnetcore-sdk with Exit Code $LASTEXITCODE"
 }
 Remove-Item $archivePath
-
-# make sure the SYSTEM account PATH environment variable is empty because,
-# for some reason, the sdk setup changes it to include private directories
-# which cannot be accessed by anyone but the user that installed the sdk.
-# see https://github.com/dotnet/core/issues/1942.
-# NB the .DEFAULT key is for the local SYSTEM account (S-1-5-18).
-New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
-New-ItemProperty `
-    -Path HKU:\.DEFAULT\Environment `
-    -Name Path `
-    -Value '' `
-    -PropertyType ExpandString `
-    -Force `
-    | Out-Null
-Remove-PSDrive HKU
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1
