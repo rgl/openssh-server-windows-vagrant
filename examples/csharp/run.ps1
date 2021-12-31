@@ -1,13 +1,13 @@
-# see https://dotnet.microsoft.com/download/dotnet/5.0
-# see https://github.com/dotnet/core/blob/main/release-notes/5.0/5.0.13/5.0.13.md
+# see https://dotnet.microsoft.com/download/dotnet/6.0
+# see https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.1/6.0.1.md
 
 # opt-out from dotnet telemetry.
 [Environment]::SetEnvironmentVariable('DOTNET_CLI_TELEMETRY_OPTOUT', '1', 'Machine')
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
 
 # install the dotnet sdk.
-$archiveUrl = 'https://download.visualstudio.microsoft.com/download/pr/44069ee2-ce02-41d7-bcc5-2168a1653278/cfc5131c81ae00a5f77f05f9963ec98d/dotnet-sdk-5.0.404-win-x64.exe'
-$archiveHash = 'a2bdf552bb09a1f8315e383ca7d65b876c505de3c94dba4c5f530eddd7f03370bddd0832ef7f3cb876bb31b90cbeb8dc770ca1ce0a3a0cdf6c7bed48b30a7065'
+$archiveUrl = 'https://download.visualstudio.microsoft.com/download/pr/343dc654-80b0-4f2d-b172-8536ba8ef63b/93cc3ab526c198e567f75169d9184d57/dotnet-sdk-6.0.101-win-x64.exe'
+$archiveHash = '695b2ddc8d5338eb0d08d9781930e578c129d55173708e1a5da993f2f1d783750d29d0d482fb2fb0253df2ba280bcb2cabba5c78fa9601b5c1f9631f94b7b65a'
 $archiveName = Split-Path -Leaf $archiveUrl
 $archivePath = "$env:TEMP\$archiveName"
 Write-Host "Downloading $archiveName..."
@@ -19,7 +19,7 @@ if ($archiveHash -ne $archiveActualHash) {
 Write-Host "Installing $archiveName..."
 &$archivePath /install /quiet /norestart | Out-String -Stream
 if ($LASTEXITCODE) {
-    throw "Failed to install dotnetcore-sdk with Exit Code $LASTEXITCODE"
+    throw "Failed to install dotnet-sdk with Exit Code $LASTEXITCODE"
 }
 Remove-Item $archivePath
 
