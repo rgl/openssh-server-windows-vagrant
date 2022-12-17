@@ -18,7 +18,7 @@ if (Test-Path $openSshConfigHome) {
     Remove-Item -Recurse -Force $openSshConfigHome
 }
 # install the service.
-&"$openSshHome\install-sshd.ps1"
+&"$openSshHome\install-sshd.ps1" -Confirm:$false
 # start the service (it will create the default configuration and host keys).
 Start-Service sshd
 Stop-Service sshd
@@ -54,7 +54,7 @@ $result = sc.exe failure ssh-agent reset= 0 actions= restart/60000
 if ($result -ne '[SC] ChangeServiceConfig2 SUCCESS') {
     throw "sc.exe failure ssh-agent failed with $result"
 }
-New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH | Out-Null
+
 Write-Host 'Saving the server public keys in the Vagrant shared folder at tmp/...'
 mkdir -Force c:/vagrant/tmp | Out-Null
 Copy-Item -Force "$openSshConfigHome\*.pub" c:/vagrant/tmp
@@ -70,3 +70,6 @@ mkdir -Force C:\Users\vagrant\.ssh | Out-Null
 
 Write-Host 'Starting the sshd service...'
 Start-Service sshd
+
+Write-Host 'Allow firewall access to the sshd service port...'
+New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH | Out-Null
