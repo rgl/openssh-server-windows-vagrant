@@ -1,9 +1,15 @@
 # install dependencies.
-choco install -y ruby --version 3.0.3.1
+# see https://community.chocolatey.org/packages/ruby
+choco install -y ruby --version 3.1.3.1
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1
 Update-SessionEnvironment
+
+# install the MSYS2 and MINGW development toolchain.
+# NB this is required to to build native ruby extensions (e.g. ed25519).
+# see https://community.chocolatey.org/packages/msys2#ruby-integration
+ridk install 3
 
 # dump the ruby and the OpenSSL library versions.
 ruby -v

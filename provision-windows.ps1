@@ -66,7 +66,7 @@ function Bash($script) {
 Bash @'
 pacman --noconfirm -Sy vim
 
-pacman --noconfirm -Sy mingw-w64-x86_64-gcc make zip
+pacman --noconfirm -Sy make zip
 
 cat >~/.bash_history <<"EOF"
 EOF
