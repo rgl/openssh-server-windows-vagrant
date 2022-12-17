@@ -1,5 +1,5 @@
 # build.
-go build
+go build -buildvcs=false
 if ($LASTEXITCODE) {
     throw "failed with exit code $LASTEXITCODE"
 }
