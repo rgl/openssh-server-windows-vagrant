@@ -7,34 +7,37 @@ Install-ChocolateyShortcut `
     -TargetPath 'C:\Windows\System32\services.msc'
 
 Write-Host 'Installing the PowerShell/Win32-OpenSSH service...'
+# install the binaries.
 # see https://github.com/PowerShell/Win32-OpenSSH/wiki/Install-Win32-OpenSSH
 # NB Binaries are in $openSshHome (C:\Program Files\OpenSSH).
 # NB Configuration, keys, and logs are in $openSshConfigHome (C:\ProgramData\ssh).
 Install-OpenSshBinaries
+# remove any existing configuration.
 $openSshConfigHome = 'C:\ProgramData\ssh'
-$originalSshdConfig = Get-Content -Raw "$openSshHome\sshd_config_default"
+if (Test-Path $openSshConfigHome) {
+    Remove-Item -Recurse -Force $openSshConfigHome
+}
+# install the service.
+&"$openSshHome\install-sshd.ps1"
+# start the service (it will create the default configuration and host keys).
+Start-Service sshd
+Stop-Service sshd
+# modify the configuration.
+$sshdConfig = Get-Content -Raw "$openSshHome\sshd_config_default"
 # Configure the Administrators group to also use the ~/.ssh/authorized_keys file.
 # see https://github.com/PowerShell/Win32-OpenSSH/issues/1324
-$sshdConfig = $originalSshdConfig `
+$sshdConfig = $sshdConfig `
     -replace '(?m)^(Match Group administrators.*)','#$1' `
     -replace '(?m)^(\s*AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys.*)','#$1'
+# Disable UseDNS.
+$sshdConfig = $sshdConfig `
+    -replace '(?m)^#?\s*UseDNS .+','UseDNS no'
 # Configure the powershell ssh subsystem (for powershell remoting over ssh).
 # see https://docs.microsoft.com/en-us/powershell/scripting/learn/remoting/ssh-remoting-in-powershell-core?view=powershell-7.2
 $sshdConfig = $sshdConfig `
     -replace '(?m)^(Subsystem\s+sftp\s+.+)',"`$1`nSubsystem`tpowershell`tC:/Progra~1/PowerShell/7/pwsh.exe -nol -sshs"
 Set-Content -Encoding Ascii "$openSshConfigHome\sshd_config" $sshdConfig
-&"$openSshHome\install-sshd.ps1"
-&"$openSshHome\ssh-keygen.exe" -A
-if ($LASTEXITCODE) {
-    throw "Failed to run ssh-keygen with exit code $LASTEXITCODE"
-}
-Set-Content `
-    -Encoding Ascii `
-    "$openSshConfigHome\sshd_config" `
-    ( `
-        (Get-Content "$openSshConfigHome\sshd_config") `
-            -replace '#?\s*UseDNS .+','UseDNS no' `
-    )
+# Ensure the files have the correct permissions.
 &"$openSshHome\FixHostFilePermissions.ps1" -Confirm:$false
 # make sure the service startup type is delayed-auto.
 # WARN do not be tempted to change the service startup type from
@@ -64,3 +67,6 @@ mkdir -Force C:\Users\vagrant\.ssh | Out-Null
 [IO.File]::WriteAllLines(
     'C:\Users\vagrant\.ssh\authorized_keys',
     [IO.File]::ReadAllLines('c:/vagrant/tmp/id_rsa.pub'))
+
+Write-Host 'Starting the sshd service...'
+Start-Service sshd
