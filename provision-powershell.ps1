@@ -1,7 +1,7 @@
 # install powershell lts.
 # see https://github.com/PowerShell/PowerShell/releases
-$archiveUrl = 'https://github.com/PowerShell/PowerShell/releases/download/v7.2.1/PowerShell-7.2.1-win-x64.msi'
-$archiveHash = '4be52cdd6323e4bebdabd39a1bf65cdfb78953f77fede957a8421c0f5f9b2676'
+$archiveUrl = 'https://github.com/PowerShell/PowerShell/releases/download/v7.2.8/PowerShell-7.2.8-win-x64.msi'
+$archiveHash = '9a27962c3652c85193c6f3678741a712e880aa9f85f403774cd632c5cb8680ff'
 $archiveName = Split-Path -Leaf $archiveUrl
 $archivePath = "$env:TEMP\$archiveName"
 
