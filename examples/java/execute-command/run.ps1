@@ -14,6 +14,12 @@ $ErrorActionPreference = 'Continue'
 # run the example.
 Write-Output 'Executing command with ssh key...'
 java -cp 'build/distributions/example-1.0.0/lib/*' Example --key-file c:/vagrant/tmp/id_rsa
+if ($LASTEXITCODE) {
+    throw "failed with exit code $LASTEXITCODE"
+}
 
 Write-Output 'Executing command with password...'
 java -cp 'build/distributions/example-1.0.0/lib/*' Example --password vagrant
+if ($LASTEXITCODE) {
+    throw "failed with exit code $LASTEXITCODE"
+}
