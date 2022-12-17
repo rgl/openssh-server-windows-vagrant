@@ -6,7 +6,7 @@ In this environment you'll also find [several language examples](examples/) on h
 
 # Usage
 
-[Build and install the Windows 2019 base image](https://github.com/rgl/windows-vagrant).
+[Build and install the Windows 2022 base image](https://github.com/rgl/windows-vagrant).
 
 Launch the SSH server machine:
 
