@@ -36,9 +36,21 @@ Set-Content `
             -replace '#?\s*UseDNS .+','UseDNS no' `
     )
 &"$openSshHome\FixHostFilePermissions.ps1" -Confirm:$false
-Set-Service 'sshd' -StartupType Automatic
-sc.exe failure 'sshd' reset= 0 actions= restart/1000
-sc.exe failure 'ssh-agent' reset= 0 actions= restart/1000
+# make sure the service startup type is delayed-auto.
+# WARN do not be tempted to change the service startup type from
+#      delayed-auto to auto, as the later proved to be unreliable.
+$result = sc.exe config sshd start= delayed-auto
+if ($result -ne '[SC] ChangeServiceConfig SUCCESS') {
+    throw "sc.exe config sshd failed with $result"
+}
+$result = sc.exe failure sshd reset= 0 actions= restart/60000
+if ($result -ne '[SC] ChangeServiceConfig2 SUCCESS') {
+    throw "sc.exe failure sshd failed with $result"
+}
+$result = sc.exe failure ssh-agent reset= 0 actions= restart/60000
+if ($result -ne '[SC] ChangeServiceConfig2 SUCCESS') {
+    throw "sc.exe failure ssh-agent failed with $result"
+}
 New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH | Out-Null
 Write-Host 'Saving the server public keys in the Vagrant shared folder at tmp/...'
 mkdir -Force c:/vagrant/tmp | Out-Null
