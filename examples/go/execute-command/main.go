@@ -103,7 +103,7 @@ func executeCommand(stdin string, command string) (int, string, error) {
 
 	session, err := client.NewSession()
 	if err != nil {
-		return -1, "", fmt.Errorf("Failed to create session: %w", err)
+		return -1, "", fmt.Errorf("failed to create session: %w", err)
 	}
 	defer session.Close()
 
@@ -116,7 +116,7 @@ func executeCommand(stdin string, command string) (int, string, error) {
 		if e, ok := err.(*ssh.ExitError); ok {
 			return e.ExitStatus(), string(output), nil
 		}
-		return -1, "", fmt.Errorf("Failed to run command: %w", err)
+		return -1, "", fmt.Errorf("failed to run command: %w", err)
 	}
 
 	return 0, string(output), nil
