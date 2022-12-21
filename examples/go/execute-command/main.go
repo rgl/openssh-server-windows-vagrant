@@ -36,7 +36,7 @@ func main() {
 
 	hkc, err := knownhosts.New(*sshKnownHostsFile)
 	if err != nil {
-		log.Fatalf("Failed to load the ssh %s known hosts file: %w", *sshKnownHostsFile, err)
+		log.Fatalf("Failed to load the ssh %s known hosts file: %v", *sshKnownHostsFile, err)
 	}
 	hostKeyCallback = hkc
 
@@ -44,7 +44,7 @@ func main() {
 
 	exitCode, output, err := executeCommand(*commandStdin, *command)
 	if err != nil {
-		log.Fatalf("failed to execute command: %w", err)
+		log.Fatalf("failed to execute command: %v", err)
 	}
 
 	log.Printf("Command ended with exit code %d and output:\n%s", exitCode, output)
