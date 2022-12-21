@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
@@ -72,7 +71,7 @@ func executeCommand(stdin string, command string) (int, string, error) {
 	if *sshPassword != "" {
 		config.Auth = append(config.Auth, ssh.Password(*sshPassword))
 	} else if *sshKeyFile != "" {
-		key, err := ioutil.ReadFile(*sshKeyFile)
+		key, err := os.ReadFile(*sshKeyFile)
 		if err != nil {
 			return -1, "", fmt.Errorf("unable to read private key: %w", err)
 		}
