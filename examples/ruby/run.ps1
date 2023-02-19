@@ -1,6 +1,7 @@
 # install dependencies.
 # see https://community.chocolatey.org/packages/ruby
-choco install -y ruby --version 3.1.3.1
+# renovate: datasource=nuget:chocolatey depName=ruby
+choco install -y ruby --version '3.1.3.1'
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1

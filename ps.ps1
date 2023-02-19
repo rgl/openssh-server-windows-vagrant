@@ -43,12 +43,14 @@ function choco {
 }
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-function Install-ZippedApplication($destinationPath, $name, $url, $expectedHash, $expectedHashAlgorithm='SHA256') {
+function Install-ZippedApplication($destinationPath, $name, $url, $expectedHash='', $expectedHashAlgorithm='SHA256') {
     $localZipPath = "$env:TEMP\$name.zip"
     (New-Object Net.WebClient).DownloadFile($url, $localZipPath)
-    $actualHash = (Get-FileHash $localZipPath -Algorithm $expectedHashAlgorithm).Hash
-    if ($actualHash -ne $expectedHash) {
-        throw "$name downloaded from $url to $localZipPath has $actualHash hash that does not match the expected $expectedHash"
+    if ($expectedHash) {
+        $actualHash = (Get-FileHash $localZipPath -Algorithm $expectedHashAlgorithm).Hash
+        if ($actualHash -ne $expectedHash) {
+            throw "$name downloaded from $url to $localZipPath has $actualHash hash that does not match the expected $expectedHash"
+        }
     }
     [IO.Compression.ZipFile]::ExtractToDirectory($localZipPath, $destinationPath)
     Remove-Item $localZipPath
@@ -83,11 +85,13 @@ function Install-OpenSshBinaries {
         Remove-Item -Recurse $openSshHome
     }
     Write-Host 'Installing Win32-OpenSSH...'
+    # see https://github.com/PowerShell/Win32-OpenSSH/releases
+    # renovate: datasource=github-releases depName=PowerShell/Win32-OpenSSH
+    $openSshVersion = '9.1.0.0p1-Beta'
     Install-ZippedApplication `
         $openSshHome `
         OpenSSH `
-        https://github.com/PowerShell/Win32-OpenSSH/releases/download/v9.1.0.0p1-Beta/OpenSSH-Win64.zip `
-        a17c2ba5dacb21936e2f927faad4e849f798f44ed1f656fc1e00bbd8e0966140
+        "https://github.com/PowerShell/Win32-OpenSSH/releases/download/v$openSshVersion/OpenSSH-Win64.zip"
     Push-Location $openSshHome
     Move-Item OpenSSH-Win64\* .
     Remove-Item OpenSSH-Win64
@@ -95,8 +99,8 @@ function Install-OpenSshBinaries {
     Pop-Location
 }
 
-cd c:/vagrant
+Set-Location c:/vagrant
 $script = Resolve-Path $script
-cd (Split-Path $script -Parent)
+Set-Location (Split-Path $script -Parent)
 Write-Host "Running $script..."
 . $script
