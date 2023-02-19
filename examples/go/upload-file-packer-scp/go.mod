@@ -1,10 +1,10 @@
 module upload-file-packer-scp
 
-go 1.19
+go 1.20
 
 require (
-	github.com/hashicorp/packer-plugin-sdk v0.3.2
-	golang.org/x/crypto v0.0.0-20220517005047-85d78b3ac167
+	github.com/hashicorp/packer-plugin-sdk v0.3.4
+	golang.org/x/crypto v0.6.0
 )
 
 require (
@@ -51,10 +51,10 @@ require (
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/zclconf/go-cty v1.10.0 // indirect
-	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
-	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 // indirect
-	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/term v0.5.0 // indirect
+	golang.org/x/text v0.7.0 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
