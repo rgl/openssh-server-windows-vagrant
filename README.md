@@ -49,3 +49,10 @@ Then login into the Windows Desktop through VirtualBox, and inside a PowerShell 
 ```powershell
 &'C:/Program Files/OpenSSH/ssh' -i c:/vagrant/tmp/id_rsa vagrant@sshd.example.com "whoami /all"
 ```
+
+List this repository dependencies (and which have newer versions):
+
+```bash
+export GITHUB_COM_TOKEN='YOUR_GITHUB_PERSONAL_TOKEN'
+./renovate.sh
+```
