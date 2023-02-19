@@ -1,5 +1,5 @@
-// see https://docs.gradle.org/7.5/userguide/java_plugin.html
-// see https://docs.gradle.org/7.5/userguide/application_plugin.html
+// see https://docs.gradle.org/7.6/userguide/java_plugin.html
+// see https://docs.gradle.org/7.6/userguide/application_plugin.html
 
 plugins {
     id 'application'
@@ -28,5 +28,5 @@ repositories {
 dependencies {
     implementation 'com.beust:jcommander:1.82'      // see https://mvnrepository.com/artifact/com.beust/jcommander
     implementation 'org.slf4j:slf4j-simple:2.0.6'   // see https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-    implementation 'com.hierynomus:sshj:0.34.0'     // see https://mvnrepository.com/artifact/com.hierynomus/sshj
+    implementation 'com.hierynomus:sshj:0.35.0'     // see https://mvnrepository.com/artifact/com.hierynomus/sshj
 }

@@ -2,7 +2,8 @@
 # see https://community.chocolatey.org/packages/temurin11
 choco install -y temurin11
 # see https://community.chocolatey.org/packages/gradle
-choco install -y gradle --version 7.5.1
+# renovate: datasource=nuget:chocolatey depName=gradle
+choco install -y gradle --version '7.6'
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1
