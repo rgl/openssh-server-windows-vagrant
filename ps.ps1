@@ -87,7 +87,7 @@ function Install-OpenSshBinaries {
     Write-Host 'Installing Win32-OpenSSH...'
     # see https://github.com/PowerShell/Win32-OpenSSH/releases
     # renovate: datasource=github-releases depName=PowerShell/Win32-OpenSSH
-    $openSshVersion = '9.2.0.0p1-Beta'
+    $openSshVersion = '9.2.2.0p1-Beta'
     Install-ZippedApplication `
         $openSshHome `
         OpenSSH `
