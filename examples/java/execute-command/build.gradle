@@ -6,8 +6,8 @@ plugins {
 }
 
 version = "1.0.0"
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 17
+targetCompatibility = 17
 
 // NB we cannot use a shadow/fat jar with bouncy castle because that would
 //    destroy the bouncy castle jce provider signature.

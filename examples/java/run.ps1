@@ -1,6 +1,6 @@
 # install dependencies.
-# see https://community.chocolatey.org/packages/temurin11
-choco install -y temurin11
+# see https://community.chocolatey.org/packages/temurin17
+choco install -y temurin17
 # see https://community.chocolatey.org/packages/gradle
 # renovate: datasource=nuget:chocolatey depName=gradle
 choco install -y gradle --version '8.1'
