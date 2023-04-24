@@ -1,7 +1,7 @@
 # install powershell lts.
 # see https://github.com/PowerShell/PowerShell/releases
 # renovate: datasource=github-releases depName=PowerShell/PowerShell extractVersion=^(?<version>7\.2\..+)
-$archiveVersion = '7.2.10'
+$archiveVersion = '7.2.11'
 $archiveUrl = "https://github.com/PowerShell/PowerShell/releases/download/v$archiveVersion/PowerShell-$archiveVersion-win-x64.msi"
 $archiveName = Split-Path -Leaf $archiveUrl
 $archivePath = "$env:TEMP\$archiveName"
