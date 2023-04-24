@@ -1,5 +1,5 @@
-// see https://docs.gradle.org/7.6/userguide/java_plugin.html
-// see https://docs.gradle.org/7.6/userguide/application_plugin.html
+// see https://docs.gradle.org/8.1/userguide/java_plugin.html
+// see https://docs.gradle.org/8.1/userguide/application_plugin.html
 
 plugins {
     id 'application'
