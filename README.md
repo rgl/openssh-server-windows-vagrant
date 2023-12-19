@@ -44,7 +44,7 @@ Now try the same, but from within the Windows Client machine. First launch it:
 vagrant up windows --no-destroy-on-error
 ```
 
-Then login into the Windows Desktop through VirtualBox, and inside a PowerShell window run:
+Then login into the Windows Desktop, and inside a PowerShell window run:
 
 ```powershell
 &'C:/Program Files/OpenSSH/ssh' -i c:/vagrant/tmp/id_rsa vagrant@sshd.example.com "whoami /all"

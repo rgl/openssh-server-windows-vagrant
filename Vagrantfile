@@ -15,14 +15,6 @@ Vagrant.configure('2') do |config|
     config.vm.synced_folder '.', '/vagrant', type: 'smb', smb_username: ENV['USER'], smb_password: ENV['VAGRANT_SMB_PASSWORD']
   end
 
-  config.vm.provider :virtualbox do |v, override|
-    v.linked_clone = true
-    v.cpus = 2
-    v.memory = 2048
-    v.customize ['modifyvm', :id, '--vram', 64]
-    v.customize ['modifyvm', :id, '--clipboard', 'bidirectional']
-  end
-
   config.vm.define :sshd do |config|
     config.vm.box = 'windows-2022-amd64'
     config.vm.hostname = 'sshd'
