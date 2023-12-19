@@ -127,7 +127,10 @@ iex ((New-Object Net.WebClient).DownloadString('https://chocolatey.org/install.p
 
 # install Google Chrome.
 # see https://www.chromium.org/administrators/configuring-other-preferences
-choco install -y googlechrome
+# NB this ignores the checksums of the chrome package. the upstream binaries
+#    are not versioned so its somewhat impossible to have a package with
+#    hardcoded checksums to a older binary work with a newer binary.
+choco install -y googlechrome --ignore-checksums
 $chromeLocation = 'C:\Program Files\Google\Chrome\Application'
 cp -Force GoogleChrome-external_extensions.json (Resolve-Path "$chromeLocation\*\default_apps\external_extensions.json")
 cp -Force GoogleChrome-master_preferences.json "$chromeLocation\master_preferences"
