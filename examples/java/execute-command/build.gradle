@@ -1,13 +1,17 @@
-// see https://docs.gradle.org/8.1/userguide/java_plugin.html
-// see https://docs.gradle.org/8.1/userguide/application_plugin.html
+// see https://docs.gradle.org/8.5/userguide/java_plugin.html
+// see https://docs.gradle.org/8.5/userguide/application_plugin.html
 
 plugins {
     id 'application'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 version = "1.0.0"
-sourceCompatibility = 17
-targetCompatibility = 17
 
 // NB we cannot use a shadow/fat jar with bouncy castle because that would
 //    destroy the bouncy castle jce provider signature.
@@ -27,6 +31,6 @@ repositories {
 
 dependencies {
     implementation 'com.beust:jcommander:1.82'      // see https://mvnrepository.com/artifact/com.beust/jcommander
-    implementation 'org.slf4j:slf4j-simple:2.0.7'   // see https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-    implementation 'com.hierynomus:sshj:0.35.0'     // see https://mvnrepository.com/artifact/com.hierynomus/sshj
+    implementation 'org.slf4j:slf4j-simple:2.0.9'   // see https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    implementation 'com.hierynomus:sshj:0.37.0'     // see https://mvnrepository.com/artifact/com.hierynomus/sshj
 }
