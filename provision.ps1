@@ -17,12 +17,11 @@ $openSshConfigHome = 'C:\ProgramData\ssh'
 if (Test-Path $openSshConfigHome) {
     Remove-Item -Recurse -Force $openSshConfigHome
 }
-# install the service.
-&"$openSshHome\install-sshd.ps1" -Confirm:$false
-# start the service (it will create the default configuration and host keys).
-Start-Service sshd
-Stop-Service sshd
-# modify the configuration.
+# modify the default configuration.
+# NB sshd, at startup, if it does not already exists (as its the case of this
+#    initial installation), will copy this file to
+#    $openSshConfigHome\sshd_config.
+# see https://github.com/PowerShell/openssh-portable/blob/v9.8.1.0/contrib/win32/win32compat/wmain_sshd.c#L152-L156
 $sshdConfig = Get-Content -Raw "$openSshHome\sshd_config_default"
 # Configure the Administrators group to also use the ~/.ssh/authorized_keys file.
 # see https://github.com/PowerShell/Win32-OpenSSH/issues/1324
@@ -33,12 +32,45 @@ $sshdConfig = $sshdConfig `
 $sshdConfig = $sshdConfig `
     -replace '(?m)^#?\s*UseDNS .+','UseDNS no'
 # Configure the powershell ssh subsystem (for powershell remoting over ssh).
-# see https://docs.microsoft.com/en-us/powershell/scripting/learn/remoting/ssh-remoting-in-powershell-core?view=powershell-7.2
+# see https://docs.microsoft.com/en-us/powershell/scripting/learn/remoting/ssh-remoting-in-powershell-core?view=powershell-7.4
 $sshdConfig = $sshdConfig `
     -replace '(?m)^(Subsystem\s+sftp\s+.+)',"`$1`nSubsystem`tpowershell`tC:/Progra~1/PowerShell/7/pwsh.exe -nol -sshs"
-Set-Content -Encoding Ascii "$openSshConfigHome\sshd_config" $sshdConfig
-# Ensure the files have the correct permissions.
+Set-Content `
+    -Encoding ascii `
+    -NoNewline `
+    -Path "$openSshHome\sshd_config_default" `
+    -Value $sshdConfig
+# install the service.
+&"$openSshHome\install-sshd.ps1" -Confirm:$false
+# start the service (it will create the configuration and host keys).
+Start-Service sshd
+# wait for all the files to be created.
+while ($true) {
+    $pendingFiles = @(
+        ,'ssh_host_ecdsa_key.pub'
+        ,'ssh_host_ecdsa_key'
+        ,'ssh_host_ed25519_key.pub'
+        ,'ssh_host_ed25519_key'
+        ,'ssh_host_rsa_key.pub'
+        ,'ssh_host_rsa_key'
+        ,'sshd_config'
+        ,'sshd.pid'
+    ) | Where-Object {
+        $filePath = "$openSshConfigHome\$_"
+        !((Test-Path $filePath) -and (Get-Item $filePath).Length)
+    }
+    if (!$pendingFiles) {
+        break
+    }
+    Start-Sleep -Seconds 5
+}
+Start-Sleep -Seconds 15
+Stop-Service sshd
+
+Write-Host 'Setting the host file permissions...'
 &"$openSshHome\FixHostFilePermissions.ps1" -Confirm:$false
+
+Write-Host 'Configuring sshd and ssh-agent services...'
 # make sure the service startup type is delayed-auto.
 # WARN do not be tempted to change the service startup type from
 #      delayed-auto to auto, as the later proved to be unreliable.

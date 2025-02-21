@@ -1,7 +1,7 @@
 # download and install.
 # see https://github.com/jtesta/ssh-audit/releases
 # renovate: datasource=github-releases depName=jtesta/ssh-audit
-$version = '3.1.0'
+$version = '3.3.0'
 $archiveUrl = "https://github.com/jtesta/ssh-audit/releases/download/v${version}/ssh-audit.exe"
 $archivePath = "$env:ChocolateyInstall\bin\ssh-audit.exe"
 if (!(Test-Path $archivePath)) {
@@ -13,7 +13,7 @@ if (!(Test-Path $archivePath)) {
 # see https://pypi.org/project/ansi2html/
 # see https://github.com/pycontribs/ansi2html/releases
 # renovate: datasource=pypi depName=ansi2html
-$ansi2htmlVersion = '1.9.1'
+$ansi2htmlVersion = '1.9.2'
 if (!(Get-Command -ErrorAction SilentlyContinue ansi2html)) {
     Write-Host "Installing ansi2html $ansi2htmlVersion..."
     python -m pip install "ansi2html==$ansi2htmlVersion"

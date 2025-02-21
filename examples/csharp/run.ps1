@@ -1,7 +1,7 @@
 # see https://community.chocolatey.org/packages/dotnet-8.0-sdk
 # see https://dotnet.microsoft.com/en-us/download/dotnet/8.0
 # renovate: datasource=nuget:chocolatey depName=dotnet-8.0-sdk
-choco install -y dotnet-8.0-sdk --version '8.0.100'
+choco install -y dotnet-8.0-sdk --version '8.0.406'
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1
