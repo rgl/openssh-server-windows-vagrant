@@ -90,12 +90,12 @@ function Install-OpenSshBinaries {
     Write-Host 'Installing Win32-OpenSSH...'
     # see https://github.com/PowerShell/Win32-OpenSSH/releases
     # renovate: datasource=github-releases depName=PowerShell/Win32-OpenSSH
-    $version = '9.8.1.0p1-Preview'
+    $version = '9.8.2.0p2-Preview'
     Install-ZippedApplication `
         $openSshHome `
         OpenSSH `
         "https://github.com/PowerShell/Win32-OpenSSH/releases/download/v$version/OpenSSH-Win64.zip" `
-        c7a1369cd73c8165be00c66e90291c4dd67784de7c3aa3af18c68ebedffa6ea9
+        65cddc5a59a2a9e25dcb19d6da8886d1fd63dc78c66157566ae556c8275abaec
     Push-Location $openSshHome
     Move-Item OpenSSH-Win64\* .
     Remove-Item OpenSSH-Win64

@@ -1,7 +1,7 @@
 # install dependencies.
 # see https://community.chocolatey.org/packages/golang
 # renovate: datasource=nuget:chocolatey depName=golang
-choco install -y golang --version '1.23.6'
+choco install -y golang --version '1.24.2'
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1

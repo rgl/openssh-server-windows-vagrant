@@ -31,6 +31,6 @@ repositories {
 
 dependencies {
     implementation 'com.beust:jcommander:1.82'      // see https://mvnrepository.com/artifact/com.beust/jcommander
-    implementation 'org.slf4j:slf4j-simple:2.0.16'  // see https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    implementation 'org.slf4j:slf4j-simple:2.0.17'  // see https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation 'com.hierynomus:sshj:0.39.0'     // see https://mvnrepository.com/artifact/com.hierynomus/sshj
 }

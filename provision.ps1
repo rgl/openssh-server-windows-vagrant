@@ -21,7 +21,7 @@ if (Test-Path $openSshConfigHome) {
 # NB sshd, at startup, if it does not already exists (as its the case of this
 #    initial installation), will copy this file to
 #    $openSshConfigHome\sshd_config.
-# see https://github.com/PowerShell/openssh-portable/blob/v9.8.1.0/contrib/win32/win32compat/wmain_sshd.c#L152-L156
+# see https://github.com/PowerShell/openssh-portable/blob/v9.8.2.0/contrib/win32/win32compat/wmain_sshd.c#L152-L156
 $sshdConfig = Get-Content -Raw "$openSshHome\sshd_config_default"
 # Configure the Administrators group to also use the ~/.ssh/authorized_keys file.
 # see https://github.com/PowerShell/Win32-OpenSSH/issues/1324

@@ -88,7 +88,7 @@ export GITHUB_COM_TOKEN='YOUR_GITHUB_PERSONAL_TOKEN'
 <span style="color: #00ffff"># host-key algorithms</span>
 <span style="color: #00ff00">(key) rsa-sha2-512 (3072-bit)               -- [info] available since OpenSSH 7.2</span>
 <span style="color: #00ff00">(key) rsa-sha2-256 (3072-bit)               -- [info] available since OpenSSH 7.2, Dropbear SSH 2020.79</span>
-<span style="color: #ff0000">(key) ecdsa-sha2-nistp256                   -- [fail] using elliptic curves that are suspected as being backdoored by the U.S. National Security Agency</span>
+<span style="color: #ff0000">(key) ecdsa-sha2-nistp384                   -- [fail] using elliptic curves that are suspected as being backdoored by the U.S. National Security Agency</span>
 <span style="color: #ffff00">                                            `- [warn] using weak random number generator could reveal the key</span>
                                             `- [info] available since OpenSSH 5.7, Dropbear SSH 2013.62
 <span style="color: #00ff00">(key) ssh-ed25519                           -- [info] available since OpenSSH 6.5, Dropbear SSH 2020.79</span>
