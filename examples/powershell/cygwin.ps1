@@ -1,4 +1,4 @@
-# define a function for easying the execution of bash scripts.
+# define a function for easing the execution of bash scripts.
 $bashPath = "C:\tools\msys64\usr\bin\bash.exe"
 function Bash($script) {
     $eap = $ErrorActionPreference

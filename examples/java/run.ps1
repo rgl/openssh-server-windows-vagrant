@@ -1,9 +1,9 @@
 # install dependencies.
-# see https://community.chocolatey.org/packages/temurin21
-choco install -y temurin21
+# see https://community.chocolatey.org/packages/temurin25
+choco install -y temurin25
 # see https://community.chocolatey.org/packages/gradle
 # renovate: datasource=nuget:chocolatey depName=gradle
-choco install -y gradle --version '8.14.0'
+choco install -y gradle --version '9.1.0'
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1

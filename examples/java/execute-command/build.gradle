@@ -1,5 +1,5 @@
-// see https://docs.gradle.org/8.14/userguide/java_plugin.html
-// see https://docs.gradle.org/8.14/userguide/application_plugin.html
+// see https://docs.gradle.org/9.1/userguide/java_plugin.html
+// see https://docs.gradle.org/9.1/userguide/application_plugin.html
 
 plugins {
     id 'application'
@@ -7,7 +7,7 @@ plugins {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 

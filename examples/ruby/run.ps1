@@ -1,7 +1,7 @@
 # install dependencies.
 # see https://community.chocolatey.org/packages/ruby
 # renovate: datasource=nuget:chocolatey depName=ruby
-choco install -y ruby --allow-downgrade --version '3.4.4.2'
+choco install -y ruby --allow-downgrade --version '3.4.6.1'
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1
