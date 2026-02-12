@@ -6,6 +6,9 @@ Install-ChocolateyShortcut `
     -ShortcutFilePath "$env:USERPROFILE\Desktop\Services.lnk" `
     -TargetPath 'C:\Windows\System32\services.msc'
 
+Write-Host 'Installing the rsync binaries...'
+Install-RsyncBinaries
+
 Write-Host 'Installing the PowerShell/Win32-OpenSSH service...'
 # install the binaries.
 # see https://github.com/PowerShell/Win32-OpenSSH/wiki/Install-Win32-OpenSSH

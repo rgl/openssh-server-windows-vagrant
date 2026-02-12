@@ -56,7 +56,31 @@ function Install-ZippedApplication($destinationPath, $name, $url, $expectedHash=
     Remove-Item $localZipPath
 }
 
+$rsyncHome = 'C:\Program Files\rsync'
 $openSshHome = 'C:\Program Files\OpenSSH'
+
+function Install-RsyncBinaries {
+    if (Test-Path $rsyncHome) {
+        Remove-Item -Force -Recurse $rsyncHome
+    }
+    # see https://github.com/rgl/rsync-vagrant/releases
+    # renovate: datasource=github-releases depName=rgl/rsync-vagrant
+    $version = '3.4.1-20250411'
+    Install-ZippedApplication `
+        $rsyncHome `
+        rsync `
+        "https://github.com/rgl/rsync-vagrant/releases/download/v$version/rsync-vagrant-$version.zip" `
+        8a4492df681a66074b59513f4446ef660fe451187b2c943096fcde46a5c17a21
+    &"$rsyncHome\rsync.exe" --version
+    $systemPath = [Environment]::GetEnvironmentVariable('PATH', 'Machine') -split ';'
+    if ($systemPath -notcontains $rsyncHome) {
+        Write-Host "Adding $rsyncHome to the system PATH..."
+        [Environment]::SetEnvironmentVariable(
+            'PATH',
+            "$([Environment]::GetEnvironmentVariable('PATH', 'Machine'));$rsyncHome",
+            'Machine')
+    }
+}
 
 function Install-OpenSshBinaries {
     if (Test-Path 'C:\Program Files\OpenSSH\uninstall.exe') {
@@ -101,6 +125,23 @@ function Install-OpenSshBinaries {
     Remove-Item OpenSSH-Win64
     .\ssh.exe -V
     Pop-Location
+}
+
+# define a function for easing the execution of bash scripts.
+function Bash($script) {
+    $eap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        # we also redirect the stderr to stdout because PowerShell
+        # oddly interleaves them.
+        # see https://www.gnu.org/software/bash/manual/bash.html#The-Set-Builtin
+        Write-Output 'exec 2>&1;set -eu;export PATH="/usr/bin:$PATH"' $script | C:\tools\msys64\usr\bin\bash.exe
+        if ($LASTEXITCODE) {
+            throw "bash execution failed with exit code $LASTEXITCODE"
+        }
+    } finally {
+        $ErrorActionPreference = $eap
+    }
 }
 
 Set-Location c:/vagrant
