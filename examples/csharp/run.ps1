@@ -1,7 +1,7 @@
 # see https://community.chocolatey.org/packages/dotnet-10.0-sdk
 # see https://dotnet.microsoft.com/en-us/download/dotnet/10.0
 # renovate: datasource=nuget:chocolatey depName=dotnet-10.0-sdk
-choco install -y dotnet-10.0-sdk --version '10.0.102'
+choco install -y dotnet-10.0-sdk --version '10.0.203'
 
 # update $env:PATH with the recently installed Chocolatey packages.
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1
